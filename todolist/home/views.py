@@ -5,9 +5,6 @@ from django.template import loader
 from .models import Task
 # Create your views here.
 def index(request):
-    # all_tasks = Task.objects.values_list('task_title', flat=True)
-    # all_taskIDs = Task.objects.values_list('task_id', flat=True)
-    # return render(request, 'home/index.html', {'tasks': all_tasks}, {'taskID': all_taskIDs})
     template = loader.get_template('home/index.html')
     all_tasks = Task.objects.all().values()
     context = {
