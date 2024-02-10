@@ -22,6 +22,8 @@ def refresh(request):
 def add_task(request):
     if request.method == 'POST':
         title = request.POST['task']
+        if title == "":
+            return redirect(reverse('refresh'))
         task = Task(task_title=title)
         task.save()        
     return redirect(reverse('refresh'))
@@ -30,4 +32,14 @@ def delete_task(request, id):
     if request.method == 'POST':
         id = Task.objects.filter(task_id=id)
         id.delete()
+    return redirect(reverse('refresh'))
+
+def edit_task(request, id):
+    if request.method == 'POST':
+        requestValue = request.POST['newtask']
+        if requestValue == "":
+            return redirect(reverse('refresh'))
+        
+        id = Task.objects.filter(task_id=id)
+        id.update(task_title=requestValue)
     return redirect(reverse('refresh'))
