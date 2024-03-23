@@ -2,7 +2,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.http import HttpResponse
 from django.template import loader
-from datetime import date
+from datetime import date, datetime
+from .googleCalender import create_event
 from .models import Task
 # Create your views here.
 def index(request):
@@ -24,12 +25,19 @@ def add_task(request):
         title = request.POST['task']
         desc = request.POST['description']
         date = request.POST['duedate']
+        add_to_google_calendar = request.POST.get('addToGoogleCalendar')
         
         if title == "":
             return redirect(reverse('refresh'))
         task = Task(task_title=title, dueDate=date, description=desc)
         
         task.save()        
+        
+        date = datetime.strptime(date, '%Y-%m-%d').strftime('%Y-%m-%dT%H:%M:%S+05:30')
+        
+        if(add_to_google_calendar == 'on'):
+            create_event(title, desc, date) 
+        
     return redirect(reverse('refresh'))
     
 def delete_task(request, id):
