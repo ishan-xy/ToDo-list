@@ -1,96 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bootstrap demo</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Todoist - Add New Task</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
-      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-      crossorigin="anonymous"
     />
     <style>
-      body {
-        font-family: sans-serif;
+      .card {
+        margin: auto;
+      }
+      .form-control-sm {
+        font-size: 0.875rem; /* Decreased font size */
+      }
+      .form-control-no-border {
+        border: none; /* Remove border */
+      }
+      .form-control-no-border:focus {
+        box-shadow: none; /* Remove focus border */
+      }
+      .form-control-sm-width {
+        width: 45%; /* Set smaller width */
+      }
+      .form-select-sm-width {
+        width: 45%; /* Set smaller width */
+      }
+      .list-group-item {
+        box-shadow: none;
       }
     </style>
   </head>
   <body>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <strong>Welcome to Ishan's todolist!</strong> create tasks below.
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
-    </div>
-    
-    <div class="container">
-      <h2>What would you like to do today!</h2>
-      <form action="{% url 'add_task'%}" method="post">
-        {% csrf_token %}
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            name="task"
-            placeholder="Add a new task"
-            aria-label="Add a new task"
-            aria-describedby="button-addon2"
-          />
-          <button
-            class="btn btn-outline-secondary"
-            type="submit"
-            id="button-addon2"
-          >
-            Add
-          </button>
+    <div class="container mt-5">
+      <h1 class="card-title mb-4">Tasks</h1>
+      <div class="card">
+        <div class="card-body">
+          <form action="{% url 'add_task' %}" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <input
+                type="text"
+                class="form-control form-control-no-border"
+                id="taskInput"
+                placeholder="Task Name"
+                name="task"
+                style="font-weight: bold; font-size: 1.5rem"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <textarea
+                class="form-control form-control-no-border"
+                id="descriptionInput"
+                name="description"
+                rows="3"
+                placeholder="Description"
+              ></textarea>
+            </div>
+            <div class="d-flex justify-content-start align-items-center mb-3">
+              <div class="flex-grow-0 me-3">
+                <input
+                  type="date"
+                  class="form-control"
+                  id="dueDateInput"
+                  placeholder="Due Date"
+                  name="duedate"
+                  value="{{ today_date|date:'Y-m-d' }}"
+                  required
+                />
+              </div>
+
+              <div class="flex-grow-0">
+                <select
+                  class="form-select"
+                  id="prioritySelect"
+                  name="priority"
+                  aria-label="Priority"
+                >
+                  <option selected value="0">Select Priority</option>
+                  <option value="1">Low</option>
+                  <option value="2">Medium</option>
+                  <option value="3">High</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+          </form>
         </div>
-      </form>
-      <ul class="list-group">
-        {% for task in tasks %}
-        <li class="list-group-item d-flex mb-3 align-items-center">
-          <div class="p-2 flex-grow-1">{{ task.task_title }}</div>
+      </div>
 
-          <form
-            id="editForm"
-            class="d-flex align-items-center"
-            action="{% url 'edit_task' id=task.task_id  %}"
-            method="post"
-            name="edit"
-            style="display: none"
-          >
-            {% csrf_token %}
-            <input
-              type="text"
-              class="form-control me-auto"
-              name="newtask"
-              placeholder="Edit task"
-            />
-            <button type="submit" class="btn btn-primary p-2 ms-2">
-              Submit
-            </button>
-          </form>
-          <form
-            class="p-2 ms-2"
-            action="{% url 'delete_task' id=task.task_id  %}"
-            method="post"
-            name="delete"
-          >
-            {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Delete</button>
-          </form>
-        </li>
-        {% endfor %}
-      </ul>
+      <div class="mt-4">
+        <h2>Tasks Created</h2>
+
+        <ul class="list-group">
+          {% for task in tasks %}
+
+          <li class="list-group-item d-flex align-items-center">
+            <div class="p-2 flex-grow-1">
+              <h5>{{ task.task_title }}</h5>
+              <p>{{ task.description }}</p>
+              <span
+                class="badge bg-{% if task.priority == 'low' %}success{% elif task.priority == 'medium' %}warning{% else %}danger{% endif %}"
+                >{{ task.priority|capfirst }}</span
+              >
+            </div>
+            <form
+              class="edit-form d-flex align-items-center"
+              action="{% url 'edit_task' id=task.task_id %}"
+              method="post"
+              name="edit"
+            >
+              {% csrf_token %}
+              <input
+                type="text"
+                class="form-control me-auto"
+                name="newtask"
+                placeholder="Edit task"
+              />
+              <button type="submit" class="btn btn-primary p-2 ms-2">
+                Submit
+              </button>
+            </form>
+            <form
+              class="delete-form p-2 ms-2"
+              action="{% url 'delete_task' id=task.task_id %}"
+              method="post"
+              name="delete"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-      crossorigin="anonymous"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
