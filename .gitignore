@@ -11,4 +11,5 @@ pyvenv.cfg
 .venv
 credentials.json
 token.json
+db.sqlite3
 pip-selfcheck.json

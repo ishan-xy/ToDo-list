@@ -8,7 +8,10 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
     <style>
       .card {
         margin: auto;
@@ -63,31 +66,23 @@
             <div class="d-flex justify-content-start align-items-center mb-3">
               <div class="flex-grow-0 me-3">
                 <input
-                  type="date"
+                  type="datetime-local"
                   class="form-control"
                   id="dueDateInput"
                   placeholder="Due Date"
                   name="duedate"
-                  value="{{ today_date|date:'Y-m-d' }}"
+                  value="{{ today_date|date:'Y-m-d' }}T00:00"
                   required
                 />
               </div>
 
-              <div class="flex-grow-0 me-3">
-                <select
-                  class="form-select"
-                  id="prioritySelect"
-                  name="priority"
-                  aria-label="Priority"
-                >
-                  <option selected value="0">Select Priority</option>
-                  <option value="1">Low</option>
-                  <option value="2">Medium</option>
-                  <option value="3">High</option>
-                </select>
-              </div>
               <div class="flex-grow-0">
-                <input type="checkbox" class="form-check-input" id="addToGoogleCalendar" name="addToGoogleCalendar">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="addToGoogleCalendar"
+                  name="addToGoogleCalendar"
+                />
                 <label class="form-check-label" for="addToGoogleCalendar">
                   <i class="fas fa-calendar-alt"></i> Add to Google Calendar
                 </label>
@@ -100,18 +95,16 @@
 
       <div class="mt-4">
         <h2>Tasks Created</h2>
-
-        <ul class="list-group">
+        {% for date, tasks in tasks_by_date.items %}
+        <span class="input-group-text">{{date}}</span>
+        <ul class="list-group mb-4">
           {% for task in tasks %}
 
           <li class="list-group-item d-flex align-items-center">
             <div class="p-2 flex-grow-1">
               <h5>{{ task.task_title }}</h5>
               <p>{{ task.description }}</p>
-              <span
-                class="badge bg-{% if task.priority == 'low' %}success{% elif task.priority == 'medium' %}warning{% else %}danger{% endif %}"
-                >{{ task.priority|capfirst }}</span
-              >
+              <small>Due Date: {{task.dueDate|date:"d-m-Y, h:i A" }}</small>
             </div>
             <form
               class="edit-form d-flex align-items-center"
@@ -142,6 +135,7 @@
           </li>
           {% endfor %}
         </ul>
+        {% endfor %}
       </div>
     </div>
 
