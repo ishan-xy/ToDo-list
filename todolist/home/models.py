@@ -8,5 +8,8 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True)
     dueDate = models.DateTimeField(null=True, blank=True)
     google_event_id = models.CharField(max_length=255, null=True, blank=True)
-
     
+    def __str__(self):
+        return self.task_title
+
+     
