@@ -12,3 +12,8 @@ pyvenv.cfg
 credentials.json
 token.json
 pip-selfcheck.json
+.env
+*.sqlite3
+__pycache__
+*.pyc
+migrations/
